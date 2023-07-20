@@ -1,1 +1,4 @@
-*.ova
+data
+figs
+*.ipynb
+*.html
