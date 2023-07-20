@@ -11,3 +11,6 @@
 
 #+CAPTION: EM traces variance
 [[file:figs/data_em_var.png]]
+
+#+CAPTION: EM traces SNR separated in 256 classes
+[[file:figs/data_em_snr.png]]

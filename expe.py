@@ -6,6 +6,19 @@ import numpy as np
 import matplotlib.pyplot as plt
 plt.rcParams["figure.figsize"] = (10, 4)
 
+def signal_to_noise(data, labels):
+    # Array of ordered integers from 0 to 255.
+    unique_classes = np.unique(labels)
+    mean_per_class = []
+    var_per_class = []
+    for value_of_z in unique_classes:
+        mean_per_class.append(np.mean(data[labels == value_of_z], axis=0))
+        var_per_class.append(np.var(data[labels == value_of_z], axis=0))
+        
+    numerator = np.var(np.array(mean_per_class), axis=0)
+    demunerator = np.mean(np.array(var_per_class), axis=0)
+    return numerator / demunerator
+
 def expe1():
     full_trace_power = np.load("data/02_full_trace_example.npy")
     plt.plot(full_trace_power)
@@ -59,6 +72,22 @@ def expe2():
     plt.xlabel("Sample")
     plt.ylabel("Variance of ADC samples")
     plt.title("Variance of the EM traces")
+    plt.show()
+
+    # SNR.
+
+    labels_256 = np.load("data/02_labels_p.npy")
+    print(labels_256.shape)
+    print(labels_256[0])
+
+    snr_em = signal_to_noise(data_em, labels_256)
+    snr_power = signal_to_noise(data_power, labels_256)
+    plt.plot(snr_em, label="EM")
+    plt.plot(snr_power, label="Power")
+    plt.legend()
+    plt.xlabel("Sample")
+    plt.ylabel("Signal to noise ratio")
+    plt.title("Signal to noise ratio (256 classes)")
     plt.show()
 
 if __name__ == "__main__":
