@@ -1,10 +1,39 @@
 :PROPERTIES:
 :ID:       7cc09056-202d-459f-aa04-0814a49b2ac3
 :END:
-#+TITLE: CYS SCA Laboratory
+#+TITLE: Cyber-In-Sophia's Side-Channel Attack Laboratory
+#+DATE: July 2023
 #+SETUPFILE: https://raw.githubusercontent.com/pierreay/orgcss/master/orgcss.setup
 
-* 3 - Leakage Analysis
+* About
+
+Laboratory class during the Cyber-In-Sophia's event organized by EURECOM
+in 2023. This laboratory is an introduction to side-channel attack analyzing
+power and EM traces through Python. All credits to the author Thomas Hiscock
+(CEA-LETI).
+
+* Files
+
+- [[file:lab.py]] :: Python script with code from original Jupyter notebook.
+- [[file:solutions.html]] :: Guided solutions (code & explanation) for the lab.
+- [[file:figs]] :: Some schemes and screenshots.
+- [[file:data]] :: Provided traces.
+
+* Highlights
+
+In this lab, you'll learn to:
+- Use the *Variance* to find where a leakage is.
+- Use the *Signal-to-Noise Ratio (SNR)* to find where a leakage is.
+- Use the *Linear Regression Analysis* through the *Least-Square Method* to
+  find how the leakage is and sorting its output to find out what the key's
+  sub-byte is (this is the side-channel attack).
+- Use the *Key Rank* to find how many traces are needed to perform the
+  side-channel attack.
+- Manipulating signals like *normalizing*, adding *noise* and *jitter*.
+
+* Analysis
+
+In the /3 - Leakage Analysis/ part, we can observe:
 
 #+CAPTION: First EM trace
 [[file:figs/data_em_0.png]]
