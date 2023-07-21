@@ -4,6 +4,7 @@ import collections
 import tqdm
 import numpy as np
 import matplotlib.pyplot as plt
+from lab_utils import aes_sbox, NIST_KEY
 plt.rcParams["figure.figsize"] = (10, 4)
 
 # * Experience #1
@@ -155,8 +156,71 @@ def expe3():
 
 # * Experience 4
 
+def sbox_output(key, plaintexts):
+    return aes_sbox(key ^ plaintexts)
+
 def expe4():
-    pass
+    data = np.load("data/03_aes_r0_data.npy")
+    plaintexts = np.load("data/03_aes_r0_pts.npy")
+
+    print("number of traces :", data.shape[0])
+    print("number of samples:", data.shape[1])
+    print("number of plaintexts:", plaintexts.shape[0])
+    print("size of plaintexts (bytes):", plaintexts.shape[1])
+    print("plaintexts subbytes #0:", plaintexts[:, 0].shape, plaintexts[:, 0])
+    print("plaintexts subbytes #1:", plaintexts[:, 1].shape, plaintexts[:, 1])
+
+    plt.plot(data[:10].T)
+    plt.xlabel("Sample")
+    plt.ylabel("Scope ADC value")
+    plt.title("Example Power Trace")
+    plt.show()
+
+    z_byte_0 = sbox_output(0, plaintexts[:, 0])
+    z_byte_1 = sbox_output(42, plaintexts[:, 1])
+    print("sbox outputs for subbyte #0 with key guess of 0:", z_byte_0.shape, z_byte_0)    
+    print("sbox outputs for subbyte #1: with key guess of 42", z_byte_1.shape, z_byte_1)
+
+    target_byte = 0
+
+    # Step 1: linear regression analysis
+    z_bits = bit_decomp(sbox_output(NIST_KEY[target_byte], plaintexts[:, target_byte]))
+    scores, models = least_square_regression(data, z_bits)
+
+    # Step 2: visualize R2
+    plt.plot(scores[0])
+    plt.ylabel("Coefficient of determination")
+    plt.xlabel("Sample index")
+    plt.show()
+
+    # Step 3: visualize model at the best location
+    best_loc = np.argsort(scores[0])[::-1]
+    print("top 10:", best_loc[:10])
+    m = models[0].T
+    for i in range(1):
+        coeffs = m[best_loc[i]]
+        plt.bar(np.arange(8), coeffs[:-1], alpha=0.5)
+    plt.ylabel("magnitude")
+    plt.xlabel("Coefficient number")
+    plt.show()
+
+    target_byte = 0
+
+    r2_scores = np.zeros((256, data.shape[1]))
+    for key_guess in tqdm.trange(256):
+        z = bit_decomp(sbox_output(key_guess, plaintexts[:, target_byte]))
+        scores, _ = least_square_regression(data, z)
+        r2_scores[key_guess] = scores[0]
+    plt.plot(r2_scores.T, color="blue", alpha=0.1)
+    plt.plot(r2_scores[NIST_KEY[target_byte]], color="red", label="correct key", alpha=0.6)
+    plt.legend()
+    plt.xlabel("Sample Index")
+    plt.ylabel("R2 value")
+    plt.show()
+
+    best_key = np.argmax(np.max(r2_scores, axis=1))
+    print("best key:", best_key)
+    print("correct key:", NIST_KEY[target_byte])
 
 # * Main
 
