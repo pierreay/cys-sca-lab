@@ -4,7 +4,6 @@ import collections
 import tqdm
 import numpy as np
 import matplotlib.pyplot as plt
-from lab_utils import aes_sbox, NIST_KEY
 plt.rcParams["figure.figsize"] = (10, 4)
 
 # * Constants
