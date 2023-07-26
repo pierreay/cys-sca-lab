@@ -5,6 +5,7 @@ import tqdm
 import numpy as np
 import matplotlib.pyplot as plt
 plt.rcParams["figure.figsize"] = (10, 4)
+plt.rcParams["backend"] = "qtagg" # Needs pyqt6 or pyqt5
 
 # * Constants
 
